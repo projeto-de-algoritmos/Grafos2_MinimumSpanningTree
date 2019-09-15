@@ -1,3 +1,5 @@
+from heapq import heappop, heappush
+
 class UDFS:
 
     def __init__(self, n):
@@ -26,7 +28,7 @@ class UDFS:
         return n == self.get_group(n)
 
     def is_same_group(self, a, b):
-        return self.get_group(self.a) == self.get_group(self.b)
+        return self.get_group(a) == self.get_group(b)
 
     def join(self, a, b):
         parent_a = self.get_group(a)
@@ -51,22 +53,37 @@ class UDFS:
 
         return count
 
-g = UDFS(10)
-g.join(1, 4)
-g.join(1, 2)
-g.join(3, 4)
-g.join(0, 9)
-g.join(9, 3)
-g.join(3, 9)
-g.join(5, 2)
-g.join(0, 7)
-g.join(2, 8)
-g.join(6, 2)
-g.join(0, 7)
-g.join(2, 1)
-g.join(9, 9)
-g.join(6, 7)
-g.join(1, 4)
+n_nodes, n_edges = map(int, input().split())
 
-print(g)
-print('Grupos:', g.count())
+edges = []
+for i in range(n_edges):
+    a, b, w = map(int, input().split())
+    heappush(edges, (w, a-1, b-1, i))
+
+results = ['none' for _ in range(n_edges)]
+dsu = UDFS(n_nodes)
+count = 0
+
+minimum, a, b, i = heappop(edges)
+dsu.join(a, b)
+count += 1
+results[i] = 'any'  # minimum edge
+
+prev = (i, minimum)
+for _ in range(n_edges-1):
+    if count == (n_nodes - 1): # Everybody is connected
+        break
+
+    w, a, b, i = heappop(edges)
+
+    if w == prev[1]:
+        results[i] = 'at least one'
+        results[prev[0]] = 'at least one'
+    elif not dsu.is_same_group(a, b):
+        dsu.join(a, b)
+        results[i] = 'any'
+        count += 1
+
+    prev = (i, w)
+
+print('\n'.join(results))
