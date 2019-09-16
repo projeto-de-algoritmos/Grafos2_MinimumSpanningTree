@@ -1,5 +1,15 @@
 from heapq import heappop, heappush
 from mygraph import MyGraph
+from collections import defaultdict
+
+n_nodes, n_edges = map(int, input().split())
+
+edges = list()
+to_check = defaultdict(lambda: (-1,-1,-1,-1))
+
+results = defaultdict(lambda: 'none')
+highest = defaultdict(lambda: -1)
+graph = defaultdict(list)
 
 class UDFS:
 
@@ -87,43 +97,83 @@ def make_edges_in_mst_graph(nodes, edges):
     
     print(f"O grafo com a ocorrências das arestas em MSTs foi salvo em {img_name}.png!")
 
-n_nodes, n_edges = map(int, input().split())
+def dfs(a, depth, p):
+    global edges
+    global results
+    global highest
+    global graph
 
-#n_nodes = int(input("Insira o número de nós do grafo: "))
-#n_edges = int(input("Insira o número de arestas do grafo: "))
+    if highest[a] != -1:
+        return highest[a];
 
-edges = []
+    minimum = depth
+    highest[a] = depth
+
+    for (w, a, b, i) in graph[a]:
+        ##print('@', w, a, b, i, depth)
+        if i == p:
+            continue
+
+        nextt = dfs(b, depth + 1, i)
+
+        if nextt <= depth:
+            results[i] = 'at least one'
+        else:
+            results[i] = 'any'
+
+        minimum = min(minimum, nextt)
+        highest[a] = minimum
+
+    return highest[a]
 
 for i in range(n_edges):
     a, b, w = map(int, input().split())
-    heappush(edges, (w, a-1, b-1, i))
+    edges.append((w, a-1, b-1, i))
 
-results = ['none' for _ in range(n_edges)]
+edges = sorted(edges)
+
 dsu = UDFS(n_nodes)
-count = 0
 
-minimum, a, b, i = heappop(edges)
-dsu.join(a, b)
-count += 1
-results[i] = 'any'  # minimum edge
+i = 0
+while i < n_edges:
+    counter = 0
+    j = i
+    while j < n_edges and edges[j][0] == edges[i][0]:
+        if dsu.get_group(edges[i][1]) == dsu.get_group(edges[j][2]):
+            results[edges[j][3]] = 'none'
+        else:
+            to_check[counter] = edges[j]
+            counter += 1
+        j += 1
+        
+    for k in range(counter):
+        w, a, b, i = to_check[k]
 
-prev = (i, minimum)
-for _ in range(n_edges-1):
-    if count == (n_nodes - 1): # Everybody is connected
-        break
+        ra = dsu.get_group(a)
+        rb = dsu.get_group(b)
 
-    w, a, b, i = heappop(edges)
+        graph[ra].append((w, ra, rb, i))
+        graph[rb].append((w, rb, ra, i))
 
-    if w == prev[1]:
-        results[i] = 'at least one'
-        results[prev[0]] = 'at least one'
-    elif not dsu.is_same_group(a, b):
-        dsu.join(a, b)
-        results[i] = 'any'
-        count += 1
+    for k in range(counter):
+        #print('To check:', to_check[k][1])
+        dfs(to_check[k][1], 0, -1)
 
-    prev = (i, w)
+    for k in range(counter):
+        w, a, b, i = to_check[k]
 
-#make_original_graph(n_nodes, n_edges)
+        ra = dsu.get_group(a)
+        rb = dsu.get_group(b)
 
-print('\n'.join(results))
+        dsu.join(ra, rb)
+
+        graph[ra] = list()
+        graph[rb] = list()
+
+        highest[ra] = -1
+        highest[rb] = -1
+
+    counter = 0
+    i = j
+
+print('\n'.join(results[i] for i in range(n_edges)))
