@@ -1,4 +1,5 @@
 from heapq import heappop, heappush
+from mygraph import MyGraph
 
 class UDFS:
 
@@ -53,9 +54,46 @@ class UDFS:
 
         return count
 
+def get_graph(nodes, label):
+    graph = MyGraph(graph_type='graph', size='20,11.25!', ratio='fill',label=label, fontsize=40)
+    
+    for v in range(1,nodes+1):
+        graph.add_nodes(v)
+
+    return graph
+
+def make_original_graph(nodes, edges):
+    original_graph = get_graph(nodes, "Grafo Original") 
+
+    for r in range(edges):
+            a, b, w = map(int, input('\tInsira dois nós e o peso da aresta que existe entre eles: ').split())
+            original_graph.link(a, b, str(w))
+
+    img_name = "original_graph"
+
+    original_graph.save_img(img_name)
+    
+    print(f"O grafo original foi salvo em {img_name}.png!")
+
+def make_edges_in_mst_graph(nodes, edges):
+    edges_graph = get_graph(nodes, "Arestas em MSTs") 
+
+    for r in range(edges):
+            edges_graph.link(a, b, str(w))
+
+    img_name = "edges_in_mst"
+
+    edges_graph.save_img(img_name)
+    
+    print(f"O grafo com a ocorrências das arestas em MSTs foi salvo em {img_name}.png!")
+
 n_nodes, n_edges = map(int, input().split())
 
+#n_nodes = int(input("Insira o número de nós do grafo: "))
+#n_edges = int(input("Insira o número de arestas do grafo: "))
+
 edges = []
+
 for i in range(n_edges):
     a, b, w = map(int, input().split())
     heappush(edges, (w, a-1, b-1, i))
@@ -85,5 +123,7 @@ for _ in range(n_edges-1):
         count += 1
 
     prev = (i, w)
+
+#make_original_graph(n_nodes, n_edges)
 
 print('\n'.join(results))
