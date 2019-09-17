@@ -25,25 +25,25 @@ class MyGraph:
         )
 
     def add_nodes(self, *nodes_names):
-        #this_path = path.dirname(__file__)
-        #this_path = path.join(this_path, 'images', 'voter.png')
-
-        #self._drawing.shape_files = [this_path]
-        
         for name in nodes_names:
             node = self.make_node(name)
 
             self._drawing.add_node(node)
 
-    def link(self, src, dst, label_edge):
+    def link(self, src, dst, label_edge, w=None):
         if label_edge is "any":
             font_color = "darkgreen"
         elif label_edge is "none":
             font_color = "red"
         else:
             font_color = "indigo"
+        
+        if w:
+            label_edge = f"{w} ({label_edge})"
+            self._drawing.add_edge(Edge(src, dst, label=label_edge, fontcolor=font_color, fontsize=40))
 
-        self._drawing.add_edge(Edge(src, dst, label=label_edge, fontcolor=font_color, fontsize=40))
+        else:
+            self._drawing.add_edge(Edge(src, dst, label=label_edge, fontcolor=font_color, fontsize=40))
 
 
     def get_image(self):

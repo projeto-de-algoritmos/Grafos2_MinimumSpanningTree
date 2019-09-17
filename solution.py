@@ -65,38 +65,18 @@ class UDFS:
 
         return count
 
-def get_graph(nodes, label):
+def make_graph(n_nodes, label):
     graph = MyGraph(graph_type='graph', size='20,11.25!', ratio='fill',label=label, fontsize=40)
     
-    for v in range(1,nodes+1):
+    for v in range(1, n_nodes+1):
         graph.add_nodes(v)
 
     return graph
 
-def make_original_graph(nodes, edges):
-    original_graph = get_graph(nodes, "Grafo Original") 
-
-    for r in range(edges):
-            a, b, w = map(int, input('\tInsira dois nós e o peso da aresta que existe entre eles: ').split())
-            original_graph.link(a, b, str(w))
-
-    img_name = "original_graph"
-
-    original_graph.save_img(img_name)
+def make_graph_img(graph, img_name):
+    graph.save_img(img_name)
     
-    print(f"O grafo original foi salvo em {img_name}.png!")
-
-def make_edges_in_mst_graph(nodes, edges):
-    edges_graph = get_graph(nodes, "Arestas em MSTs") 
-
-    for r in range(edges):
-            edges_graph.link(a, b, str(w))
-
-    img_name = "edges_in_mst"
-
-    edges_graph.save_img(img_name)
-    
-    print(f"O grafo com a ocorrências das arestas em MSTs foi salvo em {img_name}.png!")
+    print(f"O grafo foi salvo em {img_name}.png!")
 
 def dfs(a, depth, p):
     global edges
@@ -111,7 +91,6 @@ def dfs(a, depth, p):
     highest[a] = depth
 
     for (w, a, b, i) in graph[a]:
-        ##print('@', w, a, b, i, depth)
         if i == p:
             continue
 
@@ -133,9 +112,19 @@ def main():
     global highest
     global graph
 
+    original_graph = make_graph(n_nodes, "Grafo Original")
+    
+    edges_in_mst_graph = make_graph(n_nodes, "Arestas em MSTs")
+
+    edges_dict = dict()
+
     for i in range(n_edges):
-        a, b, w = map(int, input().split())
+        a, b, w = map(int, input('\tInsira dois nós e o peso da aresta que existe entre eles: ').split())
         edges.append((w, a-1, b-1, i))
+        original_graph.link(a, b, str(w))
+        edges_dict[i] = (w, a, b)
+
+    make_graph_img(original_graph, "original_graph")
 
     edges = sorted(edges, key=lambda x: x[0])
 
@@ -183,7 +172,10 @@ def main():
         i = j
 
     for i in range(n_edges):
-        print(results[i])
+        w, a, b = edges_dict[i]
+        edges_in_mst_graph.link(a, b, results[i], w)
+
+    make_graph_img(edges_in_mst_graph, "edges_in_mst")
 
 if __name__ == "__main__":
     sys.setrecursionlimit(2**32//2-1)
