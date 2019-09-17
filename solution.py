@@ -3,7 +3,7 @@ from heapq import heappop, heappush
 from mygraph import MyGraph
 from collections import defaultdict
 
-n_nodes, n_edges = map(int, input().split())
+n_nodes, n_edges = map(int, input("Insira o número de nós e arestas: ").split())
 
 edges = list()
 

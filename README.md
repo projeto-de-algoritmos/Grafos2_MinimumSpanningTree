@@ -12,24 +12,37 @@
 
 ## Sobre 
 
-<!--Descreva os objetivos do seu projeto e como ele funciona.-->
+Nessa atividade será resolvido um problema de um *contest* do Codedorces, o [160D - Edges in MST](https://codeforces.com/contest/160/problem/D) que, dado um grafo, procura saber se cada uma das arestas pode estar presente em todas as possíveis MSTs, em ao menos uma ou em nenhuma.  
 
-Nessa atividade será resolvido um problema de um *contest* do Codedorces, o [Edges in MST](https://codeforces.com/contest/160/problem/D) que, dado um grafo, procura saber se uma determinada aresta do grafo pode está presente em todas as MSTs, em ao menos uma ou em nenhuma.  
-
-O problema foi resolvido utilizando algoritmo de Kruskal.
+O problema foi resolvido utilizando o algoritmo de Kruskal para identifcar uma das MSTs e o de Tarjan para identificação de pontes. A solução utilizada aqui foi submetida e aprovada no próprio Codeforces e pode ser visualizada [aqui](https://codeforces.com/contest/160/submission/60700691)
 
 Além disso foi elaborada uma visualização para melhor compreensão do problema e da solução.
 
-## Screenshots
+## Visualização
 
-<!--Adicione 3 ou mais screenshots do projeto em funcionamento.-->
+### Input Pequeno
+
+#### Input
+
+![input small](images/original_graph_small.png)
+
+#### Solução
+
+![solução small](images/edges_in_mst_small.png)
+
+### Input Grande
+
+#### Input
+
+![input big](images/original_graph_big.png)
+
+#### Solução
+
+![solução big](images/edges_in_mst_big.png)
 
 ## Instalação 
 
-**Linguagem**: Python 3.7 <br>
-<!--**Framework**: (caso exista)<br>-->
-
-<!--Descreva os pré-requisitos para rodar o seu projeto e os comandos necessários.-->
+**Linguagem**: Python 3.7
 
 Instale o pacote graphviz da sua distribuição. Ex:
 
@@ -51,11 +64,10 @@ pip3 install -r requirements.txt --user
 
 ## Uso 
 
-<!--Explique como usar seu projeto caso haja algum passo a passo após o comando de execução.-->
+Após a instalação das dependências basta executar o seguinte comando:
 
-<!--## Outros 
-Quaisquer outras informações sobre seu projeto podem ser descritas abaixo.-->
+``` sh
+python3 solution.py
+```
 
-
-
-
+e seguir as intruções exibidas para gerar seu problema e sua solução.
