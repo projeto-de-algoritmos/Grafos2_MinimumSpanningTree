@@ -1,3 +1,4 @@
+import sys, threading
 from heapq import heappop, heappush
 from mygraph import MyGraph
 from collections import defaultdict
@@ -5,10 +6,10 @@ from collections import defaultdict
 n_nodes, n_edges = map(int, input().split())
 
 edges = list()
-to_check = defaultdict(lambda: (-1,-1,-1,-1))
 
-results = defaultdict(lambda: 'none')
+results = defaultdict(lambda: 'any')
 highest = defaultdict(lambda: -1)
+to_check = defaultdict(list)
 graph = defaultdict(list)
 
 class UDFS:
@@ -126,54 +127,68 @@ def dfs(a, depth, p):
 
     return highest[a]
 
-for i in range(n_edges):
-    a, b, w = map(int, input().split())
-    edges.append((w, a-1, b-1, i))
+def main():
+    global edges
+    global results
+    global highest
+    global graph
 
-edges = sorted(edges)
+    for i in range(n_edges):
+        a, b, w = map(int, input().split())
+        edges.append((w, a-1, b-1, i))
 
-dsu = UDFS(n_nodes)
+    edges = sorted(edges, key=lambda x: x[0])
 
-i = 0
-while i < n_edges:
-    counter = 0
-    j = i
-    while j < n_edges and edges[j][0] == edges[i][0]:
-        if dsu.get_group(edges[i][1]) == dsu.get_group(edges[j][2]):
-            results[edges[j][3]] = 'none'
-        else:
-            to_check[counter] = edges[j]
-            counter += 1
-        j += 1
-        
-    for k in range(counter):
-        w, a, b, i = to_check[k]
+    dsu = UDFS(n_nodes)
 
-        ra = dsu.get_group(a)
-        rb = dsu.get_group(b)
+    i = 0
+    while i < n_edges:
+        counter = 0
+        j = i
+        while j < n_edges and edges[j][0] == edges[i][0]:
+            if dsu.get_group(edges[j][1]) == dsu.get_group(edges[j][2]):
+                results[edges[j][3]] = 'none'
+            else:
+                to_check[counter] = edges[j]
+                counter += 1
+            j += 1
+            
+        for k in range(counter):
+            w, a, b, i = to_check[k]
 
-        graph[ra].append((w, ra, rb, i))
-        graph[rb].append((w, rb, ra, i))
+            ra = dsu.get_group(a)
+            rb = dsu.get_group(b)
 
-    for k in range(counter):
-        #print('To check:', to_check[k][1])
-        dfs(to_check[k][1], 0, -1)
+            graph[ra].append((w, ra, rb, i))
+            graph[rb].append((w, rb, ra, i))
 
-    for k in range(counter):
-        w, a, b, i = to_check[k]
+        for k in range(counter):
+            dfs(to_check[k][1], 0, -1)
 
-        ra = dsu.get_group(a)
-        rb = dsu.get_group(b)
+        for k in range(counter):
+            w, a, b, i = to_check[k]
 
-        dsu.join(ra, rb)
+            ra = dsu.get_group(a)
+            rb = dsu.get_group(b)
 
-        graph[ra] = list()
-        graph[rb] = list()
+            dsu.join(ra, rb)
 
-        highest[ra] = -1
-        highest[rb] = -1
+            graph[ra] = list()
+            graph[rb] = list()
 
-    counter = 0
-    i = j
+            highest[ra] = -1
+            highest[rb] = -1
 
-print('\n'.join(results[i] for i in range(n_edges)))
+        counter = 0
+        i = j
+
+    for i in range(n_edges):
+        print(results[i])
+
+if __name__ == "__main__":
+    sys.setrecursionlimit(2**32//2-1)
+    threading.stack_size(1 << 27)
+
+    thread = threading.Thread(target=main)
+    thread.start()
+    thread.join()
